@@ -1,0 +1,1 @@
+# lab_7_design_patterns-2_proxy-again
