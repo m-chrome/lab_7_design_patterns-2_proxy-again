@@ -9,3 +9,5 @@ include(deployment.pri)
 qtcAddDeployment()
 
 QMAKE_CXXFLAGS += -std=c++14
+
+HEADERS +=
