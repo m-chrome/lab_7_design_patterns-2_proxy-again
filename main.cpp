@@ -17,9 +17,8 @@ class SmartProxy
 private:
     T *obj;
     int thisLink;
-
-public:
     static int links;
+public:
     SmartProxy()
     {
         //thisLink=links++;
@@ -38,7 +37,7 @@ public:
             cout << "Создадим real human being" << endl;
             obj = new T;
         }
-        thisLink=links++;
+        thisLink=++links;
     }
 
     void showLinks()
