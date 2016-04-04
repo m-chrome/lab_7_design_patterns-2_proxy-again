@@ -45,7 +45,7 @@ public:
         *obj_links = 1;
     }
 
-    SmartProxy(const SmartProxy<T> &o)
+    SmartProxy(SmartProxy<T> &o)
     {
         obj_this = o.obj_this;
         obj_links = o.obj_links;
@@ -57,7 +57,7 @@ public:
         free();
     }
 
-    SmartProxy<T> & operator = (SmartProxy & o)
+    SmartProxy<T>& operator =(SmartProxy &o)
     {
         if (&o != this)
         {
@@ -69,12 +69,12 @@ public:
         return *this;
     }
 
-    T* operator ->()
+    T* operator->()
     {
         return obj_this;
     }
 
-    T operator*()
+    T operator *()
     {
         return *obj_this;
     }
@@ -82,11 +82,6 @@ public:
     int getLinks()
     {
         return *obj_links;
-    }
-
-    T* getPtr()
-    {
-        return obj_this;
     }
 
     void free()
@@ -115,5 +110,7 @@ int main()
     cout << test_ptr2.getLinks() << endl;
     ptr_t test_ptr3=test_ptr1;
     cout << test_ptr3.getLinks() << endl;
+    ptr_t t(test_ptr1);
+    cout << t.getLinks() << endl;
     return 0;
 }
