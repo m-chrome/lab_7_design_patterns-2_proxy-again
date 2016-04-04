@@ -11,62 +11,109 @@
 
 using namespace std;
 
-template <typename T>
-class SmartProxy
+class Object
 {
-private:
-    T *obj;
-    int thisLink;
-    static int links;
 public:
-    SmartProxy()
+    Object()
     {
-        //thisLink=links++;
-        obj = 0;
-    }
-    ~SmartProxy()
-    {
-        --links;
-        delete obj;
+        cout << "Real Human Bean" << endl;
     }
 
-    void createPtr()
+    void live()
     {
-        if (!obj)
-        {
-            cout << "Создадим real human being" << endl;
-            obj = new T;
-        }
-        thisLink=++links;
+        cout << "Lifetime" << endl;
     }
 
-    void showLinks()
+    ~Object()
     {
-        cout << "Links: " << links << endl;
+        cout << "Dead Human Bean" << endl;
     }
 };
 
 template <typename T>
-int SmartProxy<T> ::links=0;
+class SmartProxy
+{
+private:
+    T *obj_this;
+    int *obj_links;
+
+public:
+    SmartProxy(T *ptr = NULL)
+    {
+        obj_this = ptr;
+        obj_links = new int;
+        *obj_links = 1;
+    }
+
+    SmartProxy(const SmartProxy<T> &o)
+    {
+        obj_this = o.obj_this;
+        obj_links = o.obj_links;
+        (*obj_links)++;
+    }
+
+    ~SmartProxy()
+    {
+        free();
+    }
+
+    SmartProxy<T> & operator = (SmartProxy & o)
+    {
+        if (&o != this)
+        {
+            free();
+            obj_this = o.obj_this;
+            obj_links = o.obj_links;
+            (*obj_links)++;
+        }
+        return *this;
+    }
+
+    T* operator ->()
+    {
+        return obj_this;
+    }
+
+    T operator*()
+    {
+        return *obj_this;
+    }
+
+    int getLinks()
+    {
+        return *obj_links;
+    }
+
+    T* getPtr()
+    {
+        return obj_this;
+    }
+
+    void free()
+    {
+        if(!--(*obj_links))
+        {
+            delete obj_links;
+            obj_links=NULL;
+            if(obj_this)
+            {
+                delete obj_this;
+                obj_this=NULL;
+            }
+        }
+    }
+};
+
+typedef SmartProxy<Object> ptr_t;
 
 int main()
 {
-    int *i = new int;
-    *i = 42;
-    SmartProxy<int> *ptr1 = new SmartProxy<int>;
-    SmartProxy<int> *ptr2 = new SmartProxy<int>;
-    SmartProxy<int> *ptr3 = new SmartProxy<int>;
-    ptr1->createPtr();
-    ptr2->createPtr();
-    ptr3->createPtr();
-    ptr1->showLinks();
-    cout << "Delete!" << endl;
-    delete ptr3;
-    ptr1->showLinks();
-    delete ptr2;
-    ptr1->showLinks();
-    delete ptr1;
-
+    ptr_t test_ptr1(new Object);
+    cout << test_ptr1.getLinks() << endl;
+    ptr_t test_ptr2=test_ptr1;
+    test_ptr2->live();
+    cout << test_ptr2.getLinks() << endl;
+    ptr_t test_ptr3=test_ptr1;
+    cout << test_ptr3.getLinks() << endl;
     return 0;
 }
-
