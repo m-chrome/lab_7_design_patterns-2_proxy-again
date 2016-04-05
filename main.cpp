@@ -50,6 +50,7 @@ public:
         obj_this = o.obj_this;
         obj_links = o.obj_links;
         (*obj_links)++;
+        cout << "+1 ссылка на объект" << endl;
     }
 
     ~SmartProxy()
@@ -65,6 +66,7 @@ public:
             obj_this = o.obj_this;
             obj_links = o.obj_links;
             (*obj_links)++;
+            cout << "+1 ссылка на объект" << endl;
         }
         return *this;
     }
@@ -74,7 +76,7 @@ public:
         return obj_this;
     }
 
-    T operator *()
+    T& operator *()
     {
         return *obj_this;
     }
@@ -88,10 +90,12 @@ public:
     {
         if(!--(*obj_links))
         {
+            cout << "Объект не имеет ссылок." << endl;
             delete obj_links;
             obj_links=NULL;
             if(obj_this)
             {
+                cout << "Удаляем объект." << endl;
                 delete obj_this;
                 obj_this=NULL;
             }
@@ -110,7 +114,16 @@ int main()
     cout << test_ptr2.getLinks() << endl;
     ptr_t test_ptr3=test_ptr1;
     cout << test_ptr3.getLinks() << endl;
-    ptr_t t(test_ptr1);
-    cout << t.getLinks() << endl;
+    ptr_t test_ptr4(test_ptr1);
+    cout << test_ptr4.getLinks() << endl;
+
+    cout << endl << "Запилим ещё один новый объект:" << endl << endl;
+    {
+        ptr_t t1(new Object);
+        ptr_t t2=t1;
+        cout << t2.getLinks() << endl;
+    }
+    cout << endl << "Объект уничтожен!" << endl << endl;
+
     return 0;
 }
